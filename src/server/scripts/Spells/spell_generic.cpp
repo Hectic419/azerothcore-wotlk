@@ -6205,70 +6205,6 @@ class spell_gen_submerge_visual : public AuraScript
     }
 };
 
-// 62990 Chop Tree
-
-enum
-{
-    SPELL_CHOP_TREE = 62990,
-    NPC_CRYSTALSONG_OAK = 33308,
-    ITEM_ROUGH_HEWN_PLANK = 45045,
-    PLANK_COUNT = 2
-};
-
-class spell_gen_chop_tree : public SpellScript
-{
-    PrepareSpellScript(spell_gen_chop_tree);
-
-    Creature* FindValidOak()
-    {
-        Unit* caster = GetCaster();
-
-        if (!caster)
-            return nullptr;
-
-        return caster->FindNearestCreature(NPC_CRYSTALSONG_OAK, 10.0f, true);
-    }
-
-    SpellCastResult CheckCast()
-    {
-        if (!GetCaster()->ToPlayer())
-            return SPELL_FAILED_DONT_REPORT;
-
-        if (!FindValidOak())
-            return SPELL_FAILED_BAD_TARGETS;
-
-        return SPELL_CAST_OK;
-    }
-
-    void HandleAfterCast()
-    {
-        Player* player = GetCaster()->ToPlayer();
-
-        if (!player)
-            return;
-
-        // Recheck the target because the world may have changed during casting.
-        Creature* oak = FindValidOak();
-
-        if (!oak || !oak->IsAlive())
-            return;
-
-        // Award the planks immediately upon successful interaction.
-        player->AddItem(ITEM_ROUGH_HEWN_PLANK, 2);
-
-        // Kill the oak through normal core handling.
-        // Its SmartAI death event will handle the spirit summon.
-        player->Kill(oak, player);
-    }
-
-    void Register() override
-    {
-        OnCheckCast += SpellCheckCastFn(spell_gen_chop_tree::CheckCast);
-
-        AfterCast += SpellCastFn(spell_gen_chop_tree::HandleAfterCast);
-    }
-};
-
 void AddSC_generic_spell_scripts()
 {
     RegisterSpellScript(spell_silithyst);
@@ -6459,5 +6395,4 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_black_bow_of_the_betrayer);
     RegisterSpellScript(spell_gen_filter_party_level_80);
     RegisterSpellScript(spell_gen_submerge_visual);
-    RegisterSpellScript(spell_gen_chop_tree);
 }
