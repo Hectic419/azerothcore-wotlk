@@ -6219,7 +6219,7 @@ class spell_gen_chop_tree : public SpellScript
 {
     PrepareSpellScript(spell_gen_chop_tree);
 
-    Creature* FindValidOak() const
+    Creature* FindValidOak()
     {
         Unit* caster = GetCaster();
 
@@ -6258,14 +6258,14 @@ class spell_gen_chop_tree : public SpellScript
 
         // Kill the oak through normal core handling.
         // Its SmartAI death event will handle the spirit summon.
-        player->Kill(oak, false);
+        player->Kill(oak, player);
     }
 
     void Register() override
     {
-        OnCheckCast += SpellCheckCastFn(spell_chop_tree::CheckCast);
+        OnCheckCast += SpellCheckCastFn(spell_gen_chop_tree::CheckCast);
 
-        AfterCast += SpellCastFn(spell_chop_tree::HandleAfterCast);
+        AfterCast += SpellCastFn(spell_gen_chop_tree::HandleAfterCast);
     }
 };
 
